@@ -28,6 +28,8 @@ paths:
           $ref: '#/components/responses/createOrderSuccess'
         '400':
             $ref: '#/components/responses/WrongBodyError'
+        '403':
+            $ref: '#/components/responses/ForbiddenError'
     get:
       tags:
         - Orders
@@ -178,6 +180,9 @@ components:
             Forbidden:
               value:
                 error: "You are not a restaurant owner"
+            Unauthorized:
+              value:
+                error: "You are not logged in"
       description: Forbidden.
 
     OrderNotFound:

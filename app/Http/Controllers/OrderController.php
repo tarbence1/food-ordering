@@ -43,12 +43,6 @@ class OrderController extends Controller
             ], 404);
         }
 
-        if (is_null($user) || auth()->user()->id !== $user->id) {
-            return response()->json([
-                'error' => 'User not found'
-            ], 404);
-        }
-
 
         try {
             $order = Order::create([
