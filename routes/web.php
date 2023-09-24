@@ -31,7 +31,7 @@ Route::prefix('/restaurants')->group(function () {
     Route::get('/{id}/menu', [RestaurantController::class, 'menu'])->name('restaurants.menu');
 });
 
-Route::prefix('/orders')->group(function () {
+Route::middleware('logged.in')->prefix('/orders')->group(function () {
     Route::middleware(['only.json'])->group(function () {
         Route::post('', [OrderController::class, 'order'])->name('orders.order');
         Route::patch('/{id}', [OrderController::class, 'update'])->name('orders.update');
