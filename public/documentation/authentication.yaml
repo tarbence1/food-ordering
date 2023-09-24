@@ -1,0 +1,261 @@
+openapi: 3.0.3
+info:
+  title: FOOD ORDERING
+  description: Documentation for the FOOD ORDERING API
+  contact:
+    email: tarbence1@gmail.com
+    name: Tar Bence
+  version: '1.0'
+
+servers:
+  - url: 'http://localhost'
+    description: Local server
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Register
+      summary: Register a new customer
+      description: Register a new customer with the given data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/register'
+      responses:
+        '200':
+          $ref: '#/components/responses/registerSuccess'
+        '400':
+          $ref: '#/components/responses/WrongBodyError'
+  /auth/login:
+    post:
+      tags:
+        - Login
+      summary: Login with credentials
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/login'
+      responses:
+        '200':
+          $ref: '#/components/responses/loginSuccess'
+        '400':
+          $ref: '#/components/responses/LoginBodyError'
+  /who-am-i:
+    get:
+      tags:
+        - Who am I
+      summary: Get the current user
+      responses:
+        '200':
+          $ref: '#/components/responses/whoAmISuccess'
+        '404':
+          $ref: '#/components/responses/whoAmIError'
+
+components:
+  responses:
+    registerSuccess:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: The message of the response.
+            example:
+              message: "User created successfully"
+      description: The user was created successfully.
+    loginSuccess:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+                description: The access token of the user.
+              token_type:
+                type: string
+                description: The type of the token.
+            example:
+              access_token: "2|N6wE392s7tnjKRbNV77OagJv71SWOmuBURvevD9s3cbfcb89"
+              token_type: "Bearer"
+      description: The user was logged in successfully.
+    whoAmISuccess:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the user.
+              email:
+                type: string
+                description: The email of the user.
+            example:
+                name: "John Doe"
+                email: "johndoe@example.com"
+      description: Currently logged in user data.
+
+    WrongBodyError:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            Wrong body type:
+              value:
+                error: "Only JSON requests are allowed"
+            Missing name:
+              value:
+                error: "The name is required"
+            Name too long:
+              value:
+                error: "The name must be less than 255 characters"
+            Name must be a string:
+              value:
+                error: "The name must be a string"
+            Missing email:
+                value:
+                    error: "The email is required"
+            Email too long:
+                value:
+                    error: "The email must be less than 255 characters"
+            Email must be a string:
+                value:
+                    error: "The email must be a string"
+            Email must be a valid email address:
+                value:
+                    error: "The email must be a valid email address"
+            Missing password:
+                value:
+                    error: "The password is required"
+            Password too short:
+                value:
+                    error: "The password must be at least 8 characters"
+            Password too long:
+                value:
+                    error: "The password must be less than 255 characters"
+            Password must be a string:
+                value:
+                    error: "The password must be a string"
+            Password confirmation must match password:
+                value:
+                    error: "The password confirmation must match password"
+      description: Invalid data provided.
+
+    LoginBodyError:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            Wrong body type:
+              value:
+                error: "Only JSON requests are allowed"
+            Missing email:
+              value:
+                error: "The email is required"
+            Email too long:
+              value:
+                error: "The email must be less than 255 characters"
+            Email must be a string:
+              value:
+                error: "The email must be a string"
+            Email must be a valid email address:
+              value:
+                error: "The email must be a valid email address"
+            Missing password:
+              value:
+                error: "The password is required"
+            Password too short:
+              value:
+                error: "The password must be at least 8 characters"
+            Password too long:
+              value:
+                error: "The password must be less than 255 characters"
+            Password must be a string:
+              value:
+                error: "The password must be a string"
+            Incorrect credentials:
+              value:
+                error: "The provided credentials are incorrect."
+      description: Invalid data provided.
+    WhoAmIError:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            User not found:
+              value:
+                error: "User not found"
+      description: There is no user logged in.
+
+  schemas:
+    'register':
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          required: true
+          maxLength: 255
+          example: "John Doe"
+          description: Name of the customer.
+        email:
+          type: string
+          nullable: false
+          required: true
+          maxLength: 255
+          example: "test@example.com"
+          description: Email of the customer.
+        password:
+          type: string
+          nullable: false
+          required: true
+          minLength: 8
+          maxLength: 255
+          example: "password"
+          description: Password of the customer.
+        password_confirmation:
+            type: string
+            nullable: false
+            required: true
+            minLength: 8
+            maxLength: 255
+            example: "password"
+            description: Password confirmation of the customer.
+    'login':
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: false
+          required: true
+          maxLength: 255
+          example: "test@example.com"
+          description: Email of the customer.
+        password:
+          type: string
+          nullable: false
+          required: true
+          minLength: 8
+          maxLength: 255
+          example: "password"
+          description: Password of the customer.
+

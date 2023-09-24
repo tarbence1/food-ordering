@@ -1,0 +1,181 @@
+openapi: 3.0.3
+info:
+  title: FOOD ORDERING
+  description: Documentation for the FOOD ORDERING API
+  contact:
+    email: tarbence1@gmail.com
+    name: Tar Bence
+  version: '1.0'
+
+servers:
+  - url: 'http://localhost'
+    description: Local server
+paths:
+  /restaurants:
+    get:
+      tags:
+        - Restaurants
+      summary: Returns a list of all restaurants
+      responses:
+        '200':
+          $ref: '#/components/responses/restaurants'
+  /restaurants/{id}:
+    get:
+      tags:
+        - Restaurant by id
+      summary: Returns a restaurant with menu items by id
+      parameters:
+          - name: id
+            in: path
+            schema:
+                type: integer
+            required: true
+            description: The id of the restaurant
+      responses:
+        '200':
+          $ref: '#/components/responses/restaurantById'
+        '404':
+            $ref: '#/components/responses/RestaurantNotFound'
+  /restaurants/{id}/menu:
+    get:
+      tags:
+        - Restaurant menu by id
+      summary: Returns a restaurant's menu items by restaurant id
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: The id of the restaurant
+      responses:
+        '200':
+          $ref: '#/components/responses/restaurantMenuById'
+        '404':
+          $ref: '#/components/responses/RestaurantNotFound'
+
+components:
+  responses:
+    restaurants:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              restaurants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The id of the restaurant.
+                      example: 1
+                    name:
+                      type: string
+                      description: The name of the restaurant.
+                      example: "Restaurant 1"
+                    owner_id:
+                      type: integer
+                      description: The id of the owner of the restaurant.
+                      example: 1
+                    address:
+                      type: string
+                      description: The address of the restaurant.
+                      example: "Address 1"
+                    description:
+                      type: string
+                      description: The description of the restaurant.
+                      example: "Description 1"
+      description: A list of restaurants.
+    restaurantById:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              restaurant:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: The id of the restaurant.
+                    example: 1
+                  name:
+                    type: string
+                    description: The name of the restaurant.
+                    example: "Restaurant 1"
+              menu:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The id of the menu item
+                      example: 1
+                    name:
+                      type: string
+                      description: The name of the menu item
+                      example: "Menu item 1"
+                    restaurant_id:
+                      type: integer
+                      description: The id of the restaurant.
+                      example: 1
+                    description:
+                      type: string
+                      description: The description of the menu item.
+                      example: "Description 1"
+                    price:
+                        type: integer
+                        description: The price of the menu item.
+                        example: 1000
+      description: A restaurant with menu items.
+
+    restaurantMenuById:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              menu:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The id of the menu item
+                      example: 1
+                    name:
+                      type: string
+                      description: The name of the menu item
+                      example: "Menu item 1"
+                    restaurant_id:
+                      type: integer
+                      description: The id of the restaurant.
+                      example: 1
+                    description:
+                      type: string
+                      description: The description of the menu item.
+                      example: "Description 1"
+                    price:
+                      type: integer
+                      description: The price of the menu item.
+                      example: 1000
+      description: Menu items of a restaurant.
+
+    RestaurantNotFound:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            Restaurant Not Found:
+              value:
+                error: "Restaurant not found"
+      description: Restaurant not found
+

@@ -1,0 +1,358 @@
+openapi: 3.0.3
+info:
+  title: FOOD ORDERING
+  description: Documentation for the FOOD ORDERING API
+  contact:
+    email: tarbence1@gmail.com
+    name: Tar Bence
+  version: '1.0'
+
+servers:
+  - url: 'http://localhost'
+    description: Local server
+paths:
+  /orders:
+    post:
+      tags:
+        - Orders
+      summary: Create a new order
+      description: Allows a customer to place an order for a list of items from a restaurant's menu.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOrder'
+      responses:
+        '200':
+          $ref: '#/components/responses/createOrderSuccess'
+        '400':
+            $ref: '#/components/responses/WrongBodyError'
+    get:
+      tags:
+        - Orders
+      summary: Returns a list of all orders
+      responses:
+        '200':
+          $ref: '#/components/responses/getOrders'
+        '403':
+            $ref: '#/components/responses/ForbiddenError'
+  /orders/{id}:
+    patch:
+        tags:
+            - Orders
+        summary: Update the status of an order
+        description: Allows a restaurant owner to update the status of an order.
+        parameters:
+          - name: id
+            in: path
+            schema:
+              type: integer
+            required: true
+            description: The id of the order
+        requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/updateOrder'
+        responses:
+          '200':
+            $ref: '#/components/responses/updateOrderSuccess'
+          '400':
+            $ref: '#/components/responses/InvalidStatusError'
+          '403':
+            $ref: '#/components/responses/ForbiddenError'
+          '404':
+            $ref: '#/components/responses/OrderNotFound'
+    get:
+        tags:
+            - Orders
+        summary: Returns an order by id
+        parameters:
+          - name: id
+            in: path
+            schema:
+              type: integer
+            required: true
+            description: The id of the order
+        responses:
+          '200':
+            $ref: '#/components/responses/getOrderById'
+          '403':
+            $ref: '#/components/responses/ForbiddenError'
+          '404':
+            $ref: '#/components/responses/OrderNotFound'
+
+
+
+components:
+
+  responses:
+    createOrderSuccess:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Id of the order.
+            example:
+                id: 1
+      description: Order created successfully.
+
+    updateOrderSuccess:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Id of the order.
+            example:
+              id: 1
+              status:
+                type: string
+                description: Status of the order.
+                example: "ready"
+      description: Order created successfully.
+
+    WrongBodyError:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            Wrong body type:
+              value:
+                error: "Only JSON requests are allowed"
+            Missing customer id:
+              value:
+                error: "Missing customer id"
+            Customer id must be an integer:
+              value:
+                error: "Customer id must be an integer"
+            Customer does not exist:
+              value:
+                error: "Customer does not exist"
+            Missing restaurant id:
+                value:
+                    error: "Missing restaurant id"
+            Restaurant id must be an integer:
+                value:
+                    error: "Restaurant id must be an integer"
+            Restaurant does not exist:
+                value:
+                    error: "Restaurant does not exist"
+            Menu id must be an integer:
+                value:
+                    error: "Menu id must be an integer"
+            Menu does not exist:
+                value:
+                    error: "Menu does not exist"
+            Quantity must be an integer:
+                value:
+                    error: "Quantity must be an integer"
+            Quantity must be greater than 0:
+                value:
+                    error: "Quantity must be greater than 0"
+            Instructions must be a string:
+                value:
+                    error: "Instructions must be a string"
+      description: Invalid data provided.
+
+    ForbiddenError:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            Forbidden:
+              value:
+                error: "You are not a restaurant owner"
+      description: Forbidden.
+
+    OrderNotFound:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            Order not found:
+              value:
+                error: "Order not found"
+      description: Order not found.
+
+    InvalidStatusError:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            Invalid status:
+              value:
+                error: "The selected status is invalid"
+      description: Invalid status.
+
+    getOrders:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              orders:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The id of the order.
+                      example: 1
+                    status:
+                      type: string
+                      default: "received"
+                      description: The status of the order. Can be "received", "preparing", "ready", "delivered".
+                      example: "received"
+                    customerId:
+                      type: integer
+                      description: The id of the customer.
+                      example: 1
+                    customerName:
+                        type: string
+                        description: The name of the customer.
+                        example: "John Doe"
+                    customerEmail:
+                        type: string
+                        description: The email of the customer.
+                        example: "johndoe@example.com"
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                menuId:
+                                    type: integer
+                                    description: The id of the menu item
+                                    example: 1
+                                quantity:
+                                    type: integer
+                                    description: The quantity of the menu item.
+                                    example: 1
+                                instructions:
+                                    type: string
+                                    description: The instructions of the menu item.
+                                    example: "No onions"
+      description: Menu items of a restaurant.
+
+    getOrderById:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              order:
+                type: object
+                properties:
+                    id:
+                      type: integer
+                      description: The id of the order.
+                      example: 1
+                    status:
+                      type: string
+                      default: "received"
+                      description: The status of the order. Can be "received", "preparing", "ready", "delivered".
+                      example: "received"
+                    customerId:
+                      type: integer
+                      description: The id of the customer.
+                      example: 1
+                    customerName:
+                        type: string
+                        description: The name of the customer.
+                        example: "John Doe"
+                    customerEmail:
+                        type: string
+                        description: The email of the customer.
+                        example: ""
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                menuId:
+                                    type: integer
+                                    description: The id of the menu item
+                                    example: 1
+                                quantity:
+                                    type: integer
+                                    description: The quantity of the menu item.
+                                    example: 1
+                                instructions:
+                                    type: string
+                                    description: The instructions of the menu item.
+                                    example: "No onions"
+      description: Menu items of a restaurant.
+
+
+  schemas:
+    'createOrder':
+      type: object
+      properties:
+        customerId:
+          type: integer
+          nullable: false
+          example: 1
+          description: Id of the customer. Must be an existing customer.
+        restaurantId:
+          type: integer
+          nullable: false
+          example: 1
+          description: Id of the restaurant. Must be an existing restaurant.
+        items:
+            type: array
+            nullable: false
+            description: List of items to order.
+            items:
+              type: object
+              properties:
+                menuId:
+                  type: integer
+                  nullable: false
+                  example: 1
+                  description: Id of the menu. Must be an existing menu id.
+                quantity:
+                  type: integer
+                  nullable: false
+                  example: 1
+                  description: Quantity of the item to order.
+                instructions:
+                  type: string
+                  nullable: true
+                  example: No onions
+                  description: Instructions for the item.
+
+    'updateOrder':
+        type: object
+        properties:
+            status:
+                type: string
+                nullable: false
+                example: "ready"
+                description: Status of the order. Can be "received", "preparing", "ready", "delivered".
+
+
